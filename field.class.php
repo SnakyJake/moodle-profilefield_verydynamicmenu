@@ -147,18 +147,13 @@ class profile_field_verydynamicmenu extends profile_field_base {
      * @return int options key for the menu
      */
     public function convert_external_data($value) {
-        if (isset($this->options[$value])) {
-            $retval = $value;
-        } else {
-            $retval = array_search($value, $this->options);
-        }
-
-        // If value is not found in options then return null, so that it can be handled
-        // later by edit_save_data_preprocess.
-        if ($retval === false) {
-            $retval = null;
-        }
-        return $retval;
+        global $DB;
+        $sql = $this->field->param2;
+        //$value = str_replace("\r\n","\n",$value);
+        $data = explode("\n",str_replace("\r\n","\n",$value));
+        list($insql, $inparams) = $DB->get_in_or_equal($data);
+        $ids = $DB->get_records_sql($sql." ".$insql, $inparams);
+        return array_keys($ids);
     }
 
     /**

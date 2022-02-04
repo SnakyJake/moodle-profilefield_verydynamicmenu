@@ -40,16 +40,24 @@ class profile_define_verydynamicmenu extends profile_define_base
      */
     public function define_form_specific($form) {
 
-        // Param 1 for menu type contains the options.
+        // param1 for menu type contains the options.
         $form->addElement(
-            'textarea', 'param1', get_string('sqlquery', 'profilefield_verydynamicmenu'),
+            'textarea', 'param1', get_string('param1sqlquery', 'profilefield_verydynamicmenu'),
             array('rows' => 6, 'cols' => 40)
         );
         $form->setType('param1', PARAM_TEXT);
-        $form->addHelpButton('param1', 'param1sqlhelp', 'profilefield_verydynamicmenu');
+        $form->addHelpButton('param1', 'param1sqlqueryhelp', 'profilefield_verydynamicmenu');
         // Default data.
         $form->addElement('text', 'defaultdata', get_string('profiledefaultdata', 'admin'), 'size="50"');
         $form->setType('defaultdata', PARAM_TEXT);
+
+        // param2 for csv upload convert
+        $form->addElement(
+            'textarea', 'param2', get_string('param2sqlqueryconvert', 'profilefield_verydynamicmenu'),
+            array('rows' => 6, 'cols' => 40)
+        );
+        $form->setType('param2', PARAM_TEXT);
+        $form->addHelpButton('param2', 'param2sqlqueryconverthelp', 'profilefield_verydynamicmenu');
 
         // Let's see if the user can modify the sql.
         $context = context_system::instance();
@@ -58,6 +66,7 @@ class profile_define_verydynamicmenu extends profile_define_base
         if (!$hascap) {
             $form->hardFreeze('param1');
             $form->hardFreeze('defaultdata');
+            $form->hardFreeze('param2');
         }
         $form->addElement('text', 'sql_count_data', get_string('numbersqlvalues', 'profilefield_verydynamicmenu'));
         $form->setType('sql_count_data', PARAM_RAW);
