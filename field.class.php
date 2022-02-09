@@ -135,7 +135,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
         }
         if ($this->is_locked() and !has_capability('moodle/user:update', context_system::instance())) {
             $mform->hardFreeze($this->inputname);
-            $mform->setConstant($this->inputname, format_string($this->datakey));
+            $mform->setConstant($this->inputname, format_string($this->data));
         }
     }
     /**
@@ -149,7 +149,6 @@ class profile_field_verydynamicmenu extends profile_field_base {
     public function convert_external_data($value) {
         global $DB;
         $sql = $this->field->param2;
-        //$value = str_replace("\r\n","\n",$value);
         $data = explode("\n",str_replace("\r\n","\n",$value));
         list($insql, $inparams) = $DB->get_in_or_equal($data);
         $ids = $DB->get_records_sql($sql." ".$insql, $inparams);

@@ -1,7 +1,10 @@
 <?php
 
+// false if no fullname wanted
+// true if [fullname] is in sql
 function profilefield_fix_sql(&$sql,$user){
     global $DB;
+    //profile_get_user_fields_with_data($userid)
     $pfsql = "SELECT shortname,data from {user_info_field} f left join {user_info_data} d on d.userid=:userid and d.fieldid=f.id";
     $profilefields = $DB->get_records_sql_menu($pfsql,array('userid'=>$user->id));
     preg_match_all('/\[([a-z][a-z0-9_]*)\]/', $sql, $matches);
