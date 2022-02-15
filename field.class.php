@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- require_once("locallib.php");
+ require_once($CFG->dirroot."/user/profile/field/verydynamicmenu/locallib.php");
 
 /**
  * Class profile_field_verydynamicmenu
@@ -149,7 +149,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
     public function convert_external_data($value) {
         global $DB;
         $sql = $this->field->param2;
-        $data = explode("\n",str_replace("\r\n","\n",$value));
+        $data = explode("\n",str_ireplace(["\r\n","\r",'\r','\n'],"\n",$value));
         list($insql, $inparams) = $DB->get_in_or_equal($data);
         $ids = $DB->get_records_sql($sql." ".$insql, $inparams);
         return array_keys($ids);
