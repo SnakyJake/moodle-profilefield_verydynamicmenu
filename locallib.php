@@ -23,7 +23,9 @@ function profilefield_fix_sql(&$sql,$user){
         } else {
             if($field == "fullname"){
                 $wants_fullname = true;
-                $field = implode(get_all_user_name_fields(),",");
+                // before moodle 3.11: 
+                // $field = implode(get_all_user_name_fields(),",");
+                $field = implode(\core_user\fields::for_name()->get_required_fields(),",");
             } else {
                 $field = $user->$field;
             }
