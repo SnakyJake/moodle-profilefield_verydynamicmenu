@@ -3,7 +3,11 @@
 // false if no fullname wanted
 // true if [fullname] is in sql
 function profilefield_fix_sql(&$sql,$user){
-    global $DB;
+    global $DB,$USER;
+    //on creating a new user, $user will be empty, so set it to $USER
+    if(!is_object($user)){
+        $user = $USER;
+    }
     //profile_get_user_fields_with_data($userid)
     $pfsql = "SELECT shortname,data from {user_info_field} f left join {user_info_data} d on d.userid=:userid and d.fieldid=f.id";
     $profilefields = $DB->get_records_sql_menu($pfsql,array('userid'=>$user->id));
