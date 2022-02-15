@@ -7,8 +7,11 @@ Installation instructions:
 Just upload and install it like any other Moodle plugin.
 
 Placeholders in SQL-Queries
+
 [fullname] - replaced with fullname
+
 [profile_field...] - replaced with custom profile field
+
 [anyother] - replaced with anyother profile field
 
 Supported versions:
