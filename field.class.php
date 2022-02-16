@@ -78,6 +78,9 @@ class profile_field_verydynamicmenu extends profile_field_base {
             if ($this->field->required) {
                 $this->options[''] = get_string('choose').'...';
             }
+            foreach ($rs as $key => $option) {
+                $this->options[$key] = $option->data;
+            }
             if($this->data){
                 $this->data = json_decode($this->data);
             }
