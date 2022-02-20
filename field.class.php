@@ -34,9 +34,6 @@ class profile_field_verydynamicmenu extends profile_field_base {
     /** @var array $options */
     public $options;
 
-    /** @var int $datakey */
-    public $datakey;
-
     /** @var  array @calls array indexed by @fieldid-$userid. It keeps track of recordset,
      * so that we don't do the query twice for the same field */
     private static $acalls = array();
@@ -60,7 +57,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
                 $sql = $this->field->param1;
                 
                 global $DB;
-                if(profilefield_fix_sql($sql, \core_user::get_user($userid))){
+                if(verydynamicmenu_profilefield_fix_sql($sql, \core_user::get_user($userid))){
                     $rstmp = $DB->get_records_sql($sql);
                     $rs = [];
                     foreach($rstmp as $record){
@@ -102,7 +99,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
      * @param moodleform $mform Moodle form instance
      */
     public function edit_field_add($mform) {
-         $mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options, array("size"=>10));
+        $mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options, array("size"=>10));
         $mform->setType( $this->inputname, PARAM_TEXT);
         $mform->getElement($this->inputname)->setMultiple(true);
         $mform->getElement($this->inputname)->setSelected($this->data);
@@ -164,7 +161,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
 
         $sql = $this->field->param1;
         global $DB;
-        if(profilefield_fix_sql($sql,\core_user::get_user($this->userid))){
+        if(verydynamicmenu_profilefield_fix_sql($sql,\core_user::get_user($this->userid))){
             $rstmp = $DB->get_records_sql($sql);
             $rs = [];
             foreach($rstmp as $record){

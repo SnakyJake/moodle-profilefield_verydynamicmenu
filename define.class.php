@@ -23,7 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once("locallib.php");
+require_once($CFG->dirroot."/user/profile/field/verydynamicmenu/locallib.php");
 
 /**
  * Class profile_define_verydynamicmenu
@@ -90,7 +90,7 @@ class profile_define_verydynamicmenu extends profile_define_base
             $sql = $form->getElementValue('param1');
 
             if ($sql) {
-                $wants_fullname = profilefield_fix_sql($sql,$USER);
+                $wants_fullname = verydynamicmenu_profilefield_fix_sql($sql,$USER);
                 $rs = $DB->get_records_sql($sql);
                 $i = 0;
                 $defsample = '';
@@ -139,7 +139,7 @@ class profile_define_verydynamicmenu extends profile_define_base
         $sql = $data->param1;
         global $DB,$USER;
         try {
-            if(profilefield_fix_sql($sql,$USER)){
+            if(verydynamicmenu_profilefield_fix_sql($sql,$USER)){
                 $rstmp = $DB->get_records_sql($sql);
                 $rs = [];
                 foreach($rstmp as $record){

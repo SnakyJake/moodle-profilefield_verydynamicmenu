@@ -2,7 +2,7 @@
 
 // false if no fullname wanted
 // true if [fullname] is in sql
-function profilefield_fix_sql(&$sql,$user){
+function verydynamicmenu_profilefield_fix_sql(&$sql,$user){
     global $DB,$USER;
     //on creating a new user, $user will be empty, so set it to $USER
     if(!is_object($user)){
