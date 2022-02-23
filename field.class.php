@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
- require_once("locallib.php");
+ require_once($CFG->dirroot."/user/profile/field/verydynamicmenu/locallib.php");
 
 /**
  * Class profile_field_verydynamicmenu
@@ -33,9 +33,6 @@
 class profile_field_verydynamicmenu extends profile_field_base {
     /** @var array $options */
     public $options;
-
-    /** @var int $datakey */
-    public $datakey;
 
     /** @var  array @calls array indexed by @fieldid-$userid. It keeps track of recordset,
      * so that we don't do the query twice for the same field */
@@ -60,7 +57,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
                 $sql = $this->field->param1;
                 
                 global $DB;
-                if(profilefield_fix_sql($sql, \core_user::get_user($userid))){
+                if(verydynamicmenu_profilefield_fix_sql($sql, \core_user::get_user($userid))){
                     $rstmp = $DB->get_records_sql($sql);
                     $rs = [];
                     foreach($rstmp as $record){
@@ -79,9 +76,8 @@ class profile_field_verydynamicmenu extends profile_field_base {
                 $this->options[''] = get_string('choose').'...';
             }
             foreach ($rs as $key => $option) {
-                $this->options[format_string($key)] = format_string($option->data);// Multilang formatting.
+                $this->options[$key] = $option->data;
             }
-
             if($this->data){
                 $this->data = json_decode($this->data);
             }
@@ -103,7 +99,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
      * @param moodleform $mform Moodle form instance
      */
     public function edit_field_add($mform) {
-         $mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options, array("size"=>10));
+        $mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options, array("size"=>10));
         $mform->setType( $this->inputname, PARAM_TEXT);
         $mform->getElement($this->inputname)->setMultiple(true);
         $mform->getElement($this->inputname)->setSelected($this->data);
@@ -135,7 +131,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
         }
         if ($this->is_locked() and !has_capability('moodle/user:update', context_system::instance())) {
             $mform->hardFreeze($this->inputname);
-            $mform->setConstant($this->inputname, format_string($this->datakey));
+            $mform->setConstant($this->inputname, format_string($this->data));
         }
     }
     /**
@@ -147,18 +143,16 @@ class profile_field_verydynamicmenu extends profile_field_base {
      * @return int options key for the menu
      */
     public function convert_external_data($value) {
-        if (isset($this->options[$value])) {
-            $retval = $value;
+        global $DB;
+        if(is_array($value)){
+            return $value;
         } else {
-            $retval = array_search($value, $this->options);
+            $sql = $this->field->param2;
+            $data = explode("\n",str_ireplace(["\r\n","\r",'\r','\n'],"\n",$value));
+            list($insql, $inparams) = $DB->get_in_or_equal($data);
+            $ids = $DB->get_records_sql($sql." ".$insql, $inparams);
+            return array_map("strval",array_keys($ids));
         }
-
-        // If value is not found in options then return null, so that it can be handled
-        // later by edit_save_data_preprocess.
-        if ($retval === false) {
-            $retval = null;
-        }
-        return $retval;
     }
 
     /**
@@ -171,7 +165,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
 
         $sql = $this->field->param1;
         global $DB;
-        if(profilefield_fix_sql($sql,\core_user::get_user($this->userid))){
+        if(verydynamicmenu_profilefield_fix_sql($sql,\core_user::get_user($this->userid))){
             $rstmp = $DB->get_records_sql($sql);
             $rs = [];
             foreach($rstmp as $record){
