@@ -148,7 +148,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
         $data = explode("\n",str_ireplace(["\r\n","\r",'\r','\n'],"\n",$value));
         list($insql, $inparams) = $DB->get_in_or_equal($data);
         $ids = $DB->get_records_sql($sql." ".$insql, $inparams);
-        return array_keys($ids);
+        return array_map("strval",array_keys($ids));
     }
 
     /**
