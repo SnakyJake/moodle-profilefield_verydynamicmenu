@@ -144,11 +144,15 @@ class profile_field_verydynamicmenu extends profile_field_base {
      */
     public function convert_external_data($value) {
         global $DB;
-        $sql = $this->field->param2;
-        $data = explode("\n",str_ireplace(["\r\n","\r",'\r','\n'],"\n",$value));
-        list($insql, $inparams) = $DB->get_in_or_equal($data);
-        $ids = $DB->get_records_sql($sql." ".$insql, $inparams);
-        return array_map("strval",array_keys($ids));
+        if(is_array($value)){
+            return $value;
+        } else {
+            $sql = $this->field->param2;
+            $data = explode("\n",str_ireplace(["\r\n","\r",'\r','\n'],"\n",$value));
+            list($insql, $inparams) = $DB->get_in_or_equal($data);
+            $ids = $DB->get_records_sql($sql." ".$insql, $inparams);
+            return array_map("strval",array_keys($ids));
+        }
     }
 
     /**
