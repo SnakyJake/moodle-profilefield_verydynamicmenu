@@ -1,0 +1,27 @@
+<?php
+
+
+//convert old format [0,1,2,3] to new format {"0":"bla","1":"bla",...}
+
+require(__DIR__ . '/../../../../config.php');
+
+global $DB;
+
+$users = $DB->get_records("user");
+$values = $DB->get_records("user_info_data",["fieldid"=>20]);
+
+foreach($values as $value){
+    if(!empty($value->data)){
+        $data = json_decode($value->data,true);
+        $newdata = [];
+        if(!is_string(reset($data))){
+            foreach($data as $d){
+                if(isset($users[$d])){
+                    $newdata[$d] = fullname($users[$d]);
+                }
+            }
+            $value->data = json_encode($newdata,JSON_NUMERIC_CHECK|JSON_UNESCAPED_UNICODE);
+            $DB->update_record("user_info_data",$value);
+        }
+    }
+}
