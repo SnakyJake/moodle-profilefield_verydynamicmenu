@@ -34,6 +34,8 @@ class profile_field_verydynamicmenu extends profile_field_base {
     /** @var array $options */
     public $options;
 
+    private $datakey = "";
+
     /** @var  array @calls array indexed by @fieldid-$userid. It keeps track of recordset,
      * so that we don't do the query twice for the same field */
     private static $acalls = array();
@@ -50,12 +52,11 @@ class profile_field_verydynamicmenu extends profile_field_base {
         parent::__construct($fieldid, $userid, $fielddata);
         // Only if we actually need data.
         if ($fieldid !== 0 && $userid !== 0) {
-            $mykey = $fieldid.','.$userid; // It will always work because they are number, so no chance of ambiguity.
-            if (array_key_exists($mykey , self::$acalls)) {
-                $rs = self::$acalls[$mykey];
+            $this->datakey = $fieldid.','.$userid; // It will always work because they are number, so no chance of ambiguity.
+            if (array_key_exists($this->datakey , self::$acalls)) {
+                $rs = self::$acalls[$this->datakey];
             } else {
                 $sql = $this->field->param1;
-                
                 global $DB;
                 if(verydynamicmenu_profilefield_fix_sql($sql, \core_user::get_user($userid))){
                     $rstmp = $DB->get_records_sql($sql);
@@ -69,7 +70,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
                     $rs = $DB->get_records_sql($sql);
                 }
                 
-                self::$acalls[$mykey] = $rs;
+                self::$acalls[$this->datakey] = $rs;
             }
             $this->options = array();
             if ($this->field->required) {
@@ -78,7 +79,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
             foreach ($rs as $key => $option) {
                 $this->options[$key] = $option->data;
             }
-            if($this->data){
+            if(is_string($this->data)){
                 $this->data = json_decode($this->data);
             }
         }
@@ -106,6 +107,31 @@ class profile_field_verydynamicmenu extends profile_field_base {
     }
 
     /**
+     * When passing the user object to the form class for the edit profile page
+     * we should load the key for the saved data
+     * Overwrites the base class method.
+     *
+     * @param   object   user object
+     */
+    public function edit_load_user_data($user)
+    {
+        if(!empty($this->data)){
+            $result = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+            if(end($result)["function"] == "download_data"){
+                $string = '';
+                foreach($this->data as $id) {
+                    if (array_key_exists($id, self::$acalls[$this->datakey])) {
+                        $string .= ($string?"\n":"").self::$acalls[$this->datakey][$id]->data;
+                    }
+                }
+                $user->{$this->inputname} = $string;
+                return;
+            }
+        }
+        $user->{$this->inputname} = $this->data;
+    }
+
+    /**
      * The data from the form returns the key. This should be converted to the
      * respective option string to be saved in database
      * Overwrites base class accessor method.
@@ -116,7 +142,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
     public function edit_save_data_preprocess($data, $datarecord)
     {
         if(empty($data)){
-            return null;
+            return "";
         }
         return json_encode($data);
     }
@@ -163,23 +189,10 @@ class profile_field_verydynamicmenu extends profile_field_base {
             return get_string("none");
         }
 
-        $sql = $this->field->param1;
-        global $DB;
-        if(verydynamicmenu_profilefield_fix_sql($sql,\core_user::get_user($this->userid))){
-            $rstmp = $DB->get_records_sql($sql);
-            $rs = [];
-            foreach($rstmp as $record){
-                $rs[$record->id] = new stdClass();
-                $rs[$record->id]->id = $record->id;
-                $rs[$record->id]->data = fullname($record);
-            }
-        } else {
-            $rs = $DB->get_records_sql($sql);
-        }
         $string = '';
         foreach($this->data as $id) {
-            if (array_key_exists($id, $rs)) {
-                $string .= ($string?"<br>":"").$rs[$id]->data;
+            if (array_key_exists($id, self::$acalls[$this->datakey])) {
+                $string .= ($string?"<br>":"").self::$acalls[$this->datakey][$id]->data;
             }
         }
         return $string?$string:get_string("none");
