@@ -80,7 +80,10 @@ class profile_field_verydynamicmenu extends profile_field_base {
                 $this->options[$key] = $option->data;
             }
             if(is_string($this->data)){
-                $this->data = json_decode($this->data);
+                $this->data = json_decode($this->data, true);
+                if(!empty($this->data) && is_string(reset($this->data))){
+                    $this->data = array_keys($this->data);
+                }
             }
         }
     }
@@ -144,7 +147,13 @@ class profile_field_verydynamicmenu extends profile_field_base {
         if(empty($data)){
             return "";
         }
-        return json_encode($data);
+        $savedata = [];
+        foreach($data as $id) {
+            if (array_key_exists($id, self::$acalls[$this->datakey])) {
+                $savedata[intval($id)] = self::$acalls[$this->datakey][$id]->data;
+            }
+        }
+        return json_encode($savedata,JSON_NUMERIC_CHECK|JSON_UNESCAPED_UNICODE);
     }
 
     /**
@@ -177,7 +186,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
             $data = explode("\n",str_ireplace(["\r\n","\r",'\r','\n'],"\n",$value));
             list($insql, $inparams) = $DB->get_in_or_equal($data);
             $ids = $DB->get_records_sql($sql." ".$insql, $inparams);
-            return array_map("strval",array_keys($ids));
+            return array_keys($ids);
         }
     }
 
