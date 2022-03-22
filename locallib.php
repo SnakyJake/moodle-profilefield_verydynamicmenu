@@ -25,7 +25,7 @@ function verydynamicmenu_profilefield_fix_sql(&$sql,$user){
                 $wants_fullname = true;
                 // before moodle 3.11: 
                 // $field = implode(get_all_user_name_fields(),",");
-                $field = implode(\core_user\fields::for_name()->get_required_fields(),",");
+                $field = implode(",",\core_user\fields::for_name()->get_required_fields());
             } else {
                 $field = $user->$field;
             }
