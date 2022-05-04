@@ -151,6 +151,11 @@ class profile_field_verydynamicmenu extends profile_field_base {
         foreach($data as $id) {
             if (array_key_exists($id, self::$acalls[$this->datakey])) {
                 $savedata[intval($id)] = self::$acalls[$this->datakey][$id]->data;
+            } else {
+                $newuser_datakey = $this->fieldid.',-1';
+                if (array_key_exists($id, self::$acalls[$newuser_datakey])) {
+                    $savedata[intval($id)] = self::$acalls[$newuser_datakey][$id]->data;
+                }
             }
         }
         return json_encode($savedata,JSON_NUMERIC_CHECK|JSON_UNESCAPED_UNICODE);
