@@ -172,7 +172,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
         if ($this->is_locked() and !has_capability('moodle/user:update', context_system::instance())) {
             $mform->hardFreeze($this->inputname);
             // this line messes all things up
-            // $mform->setConstant($this->inputname, $this->display_data());
+            // $mform->setConstant($this->inputname, format_string($this->data));
         }
     }
     /**
