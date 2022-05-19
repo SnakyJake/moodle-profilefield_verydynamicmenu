@@ -100,7 +100,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
     /**
      * Create the code snippet for this field instance
      * Overwrites the base class method
-     * @param moodleform $mform Moodle form instance
+     * @param MoodleQuickForm $mform instance of the moodleform class
      */
     public function edit_field_add($mform) {
         $mform->addElement('select', $this->inputname, format_string($this->field->name), $this->options, array("size"=>10));
@@ -163,7 +163,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
 
     /**
      * HardFreeze the field if locked.
-     * @param moodleform $mform instance of the moodleform class
+     * @param MoodleQuickForm $mform instance of the moodleform class
      */
     public function edit_field_set_locked($mform) {
         if (!$mform->elementExists($this->inputname)) {
@@ -171,7 +171,8 @@ class profile_field_verydynamicmenu extends profile_field_base {
         }
         if ($this->is_locked() and !has_capability('moodle/user:update', context_system::instance())) {
             $mform->hardFreeze($this->inputname);
-            $mform->setConstant($this->inputname, format_string($this->data));
+            // this line messes all things up
+            // $mform->setConstant($this->inputname, $this->display_data());
         }
     }
     /**
@@ -206,7 +207,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
         $string = '';
         foreach($this->data as $id) {
             if (array_key_exists($id, self::$acalls[$this->datakey])) {
-                $string .= ($string?"<br>":"").self::$acalls[$this->datakey][$id]->data;
+                $string .= ($string?"<br>":"").format_string(self::$acalls[$this->datakey][$id]->data);
             }
         }
         return $string?$string:get_string("none");

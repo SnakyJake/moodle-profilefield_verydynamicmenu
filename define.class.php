@@ -36,7 +36,7 @@ class profile_define_verydynamicmenu extends profile_define_base
     /**
      * Adds elements to the form for creating/editing this type of profile field.
      *
-     * @param moodleform $form
+     * @param MoodleQuickForm $form instance of the moodleform class
      */
     public function define_form_specific($form) {
 
@@ -127,7 +127,7 @@ class profile_define_verydynamicmenu extends profile_define_base
     /**
      * Validates data for the profile field.
      *
-     * @param  array $data
+     * @param  array|stdClass $data
      * @param  array $files
      * @return array
      */
