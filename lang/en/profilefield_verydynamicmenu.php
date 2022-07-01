@@ -38,4 +38,4 @@ $string['verydynamicmenu:caneditsql'] = 'Can edit sql query for dynamic menu use
 $string['param1sqlqueryhelp'] = 'Sql query';
 $string['param1sqlqueryhelp_help'] = 'The query should return two column: data and id. Furthermore, it should return at least one value. Example: "select 1 id, \'hallo\' data"';
 $string['param2sqlqueryconverthelp'] = 'Sql query fpr upload convert';
-$string['param2sqlqueryconverthelp_help'] = 'The query should return the id converted to by data. The data should be devided by \n when uploading"';
+$string['param2sqlqueryconverthelp_help'] = 'The query should return the id converted to by data. The data should be devided by ";" when uploading';
