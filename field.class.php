@@ -69,7 +69,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
                 } else {
                     $rs = $DB->get_records_sql($sql);
                 }
-                
+
                 self::$acalls[$this->datakey] = $rs;
             }
             $this->options = array();
@@ -144,7 +144,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
      */
     public function edit_save_data_preprocess($data, $datarecord)
     {
-        if(empty($data)){
+        if(empty($data)) {
             return "";
         }
         $savedata = [];
@@ -175,23 +175,26 @@ class profile_field_verydynamicmenu extends profile_field_base {
             // $mform->setConstant($this->inputname, format_string($this->data));
         }
     }
+
     /**
      * Convert external data (csv file) from value to key for processing later by edit_save_data_preprocess
      *
      * not implemented
-     * 
+     *
      * @param string $value one of the values in menu options.
-     * @return int options key for the menu
+     * @return array options key for the menu
      */
     public function convert_external_data($value) {
         global $DB;
-        if(is_array($value)){
+
+        if(is_array($value)) {
             return $value;
         } else {
             $sql = $this->field->param2;
-            $data = explode("\n",str_ireplace(["\r\n","\r",'\r','\n'],"\n",$value));
+            $data = explode(';', str_replace(["\r\n","\r","\n",'\r\n','\r','\n'], ';', $value));
+            $data = array_map('trim', $data);
             list($insql, $inparams) = $DB->get_in_or_equal($data);
-            $ids = $DB->get_records_sql($sql." ".$insql, $inparams);
+            $ids = $DB->get_records_sql("$sql $insql", $inparams);
             return array_keys($ids);
         }
     }
@@ -200,7 +203,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
      * Display the data for this field.
      */
     public function display_data() {
-        if(!is_array($this->data)){
+        if(!is_array($this->data)) {
             return get_string("none");
         }
 
