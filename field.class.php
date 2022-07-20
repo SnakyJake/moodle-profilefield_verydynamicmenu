@@ -51,7 +51,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
         // First call parent constructor.
         parent::__construct($fieldid, $userid, $fielddata);
         // Only if we actually need data.
-        if ($fieldid !== 0 && $userid !== 0) {
+        if ($fieldid !== 0) {
             $this->datakey = $fieldid.','.$userid; // It will always work because they are number, so no chance of ambiguity.
             if (array_key_exists($this->datakey , self::$acalls)) {
                 $rs = self::$acalls[$this->datakey];
@@ -152,7 +152,7 @@ class profile_field_verydynamicmenu extends profile_field_base {
             if (array_key_exists($id, self::$acalls[$this->datakey])) {
                 $savedata[intval($id)] = self::$acalls[$this->datakey][$id]->data;
             } else {
-                $newuser_datakey = $this->fieldid.',-1';
+                $newuser_datakey = $this->fieldid.',0';
                 if (array_key_exists($id, self::$acalls[$newuser_datakey])) {
                     $savedata[intval($id)] = self::$acalls[$newuser_datakey][$id]->data;
                 }
